@@ -15,7 +15,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/",
-                                "/api/**"
+                                "/api/v1/**"
                         ).permitAll() // cho phép proxy
                         .anyRequest().authenticated()          // các route khác phải login
                 );

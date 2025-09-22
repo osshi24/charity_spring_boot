@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class ProxyController {
 
     @Autowired
@@ -21,7 +21,7 @@ public class ProxyController {
             HttpServletRequest request,
             @RequestBody(required = false) String body) {
 
-        String path = request.getRequestURI().substring("/api".length());
+        String path = request.getRequestURI().substring("/api/v1/".length());
         String queryString = request.getQueryString();
 //        truyền header authorization
 
