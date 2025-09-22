@@ -1,0 +1,24 @@
+name: Deploy Spring Boot
+
+on:
+  push:
+    branches:
+      - main   # chỉ chạy khi push vào nhánh main
+
+jobs:
+  deploy:
+    runs-on: self-hosted   # chạy trên VPS Ubuntu (runner bạn đã setup)
+
+    steps:
+      - name: Git pull latest code
+        run: |
+          cd ~/charity_spring_boot/    # đổi thành đường dẫn project trên VPS
+          git reset --hard
+          git pull origin main
+
+      - name: Build Spring Boot with Maven and restart with PM2
+        run: |
+          cd ~/charity_spring_boot/
+          mvn clean package -DskipTests
+          pm2 restart springboot || pm2 start "java -jar target/*.jar" --name springboot
+            
