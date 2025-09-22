@@ -19,6 +19,25 @@ jobs:
       - name: Build Spring Boot with Maven and restart with PM2
         run: |
           cd ~/charity_spring_boot/
-          mvn clean package -DskipTests
-          pm2 restart springboot || pm2 start "java -jar target/*.jar" --name springboot
-            
+          pm2 restart springboot-dev || pm2 start "mvn spring-boot:run" --name springboot-dev
+
+      - name: cleanup old builds
+        run: |
+          cd ~/charity_spring_boot/
+          find target/ -type f -name "*.jar" -mtime +7 -exec rm {} \;  # xóa file jar cũ hơn 7 ngày
+          find target/ -type f -name "*.war" -mtime +7 -exec rm {} \;  # xóa file war cũ hơn 7 ngày
+          find target/ -type f -name "*.log" -mtime +7 -exec rm {} \;  # xóa file log cũ hơn 7 ngày
+          find target/ -type d -name "dependency" -mtime +7 -exec rm -rf {} \;  # xóa thư mục dependency cũ hơn 7 ngày
+          find target/ -type d -name "surefire-reports" -mtime +7 -exec rm -rf {} \;  # xóa thư mục surefire-reports cũ hơn 7 ngày
+          find target/ -type d -name "failsafe-reports" -mtime +7 -exec rm -rf {} \;  # xóa thư mục failsafe-reports cũ hơn 7 ngày
+          find target/ -type d -name "test-classes" -mtime +7 -exec rm -rf {} \;  # xóa thư mục test-classes cũ hơn 7 ngày
+          find target/ -type d -name "classes" -mtime +7 -exec rm -rf {} \;  # xóa thư mục classes cũ hơn 7 ngày
+          find target/ -type d -name "generated-sources" -mtime +7 -exec rm -rf {} \;  # xóa thư mục generated-sources cũ hơn 7 ngày
+          find target/ -type d -name "generated-test-sources" -mtime +7 -exec rm -rf {} \;  # xóa thư mục generated-test-sources cũ hơn 7 ngày
+          find target/ -type d -name "maven-status" -mtime +7 -exec rm -rf {} \;  # xóa thư mục maven-status cũ hơn 7 ngày
+          find target/ -type d -name "maven-archiver" -mtime +7 -exec rm -rf {} \;  # xóa thư mục maven-archiver cũ hơn 7 ngày
+          find target/ -type d -name "original" -mtime +7 -exec rm -rf {} \;  # xóa thư mục original cũ hơn 7 ngày
+          find target/ -type d -name "spring-boot" - mtime +7 -exec rm -rf {} \;  # xóa thư mục spring-boot cũ hơn 7 ngày
+          echo "Old build files cleaned up."
+          
+              
