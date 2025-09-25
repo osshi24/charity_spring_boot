@@ -8,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to the Charity API cicd!";
+        return "Welcome to the Charity API ^^!";
     }
 
 }
