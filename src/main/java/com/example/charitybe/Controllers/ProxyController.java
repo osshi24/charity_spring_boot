@@ -15,6 +15,7 @@ public class ProxyController {
     @Autowired
     private PostgRestService postgRestService;
 
+
     @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST,
             RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> proxyRequest(
@@ -35,4 +36,6 @@ public class ProxyController {
                 request
         );
     }
+
+   
 }
