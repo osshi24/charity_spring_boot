@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PostgREST API Docs</title>
+    <link rel="stylesheet" type="text/css" href="swagger-ui.css" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+<script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+
+<script>
+    window.onload = () => {
+        const ui = SwaggerUIBundle({
+            url: "http://54.251.182.3:3000/",   // spec proxy từ Spring Boot
+            dom_id: "#swagger-ui",
+            deepLinking: true,
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            layout: "BaseLayout",
+            // thêm Bearer JWT vào
+            requestInterceptor: (req) => {
+                const token = window.localStorage.getItem("jwtToken");
+                if (token) {
+                    req.headers["Authorization"] = "Bearer " + token;
+                }
+                return req;
+            }
+        });
+        ui.initOAuth({
+            clientId: "your-client-id",
+            clientSecret: "your-client-secret",
+            scopes: [],
+            usePkceWithAuthorizationCodeGrant: true
+        });
+        // Tạo nút "Authorize" với Bearer Token
+        window.ui.getSystem().authActions.configureAuth([
+            {
+                securityScheme: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT"
+                },
+                name: "bearerAuth",
+                value: ""
+            }
+        ]);
+    };
+</script>
+</body>
+</html>

@@ -15,7 +15,7 @@ import java.util.Enumeration;
 public class PostgRestService {
 
     private final RestTemplate restTemplate;
-    private final String postgrestUrl = "http://13.229.67.220:3000"; // URL PostgREST
+    private final String postgrestUrl = "http://54.251.182.3:3000/"; // URL PostgREST
 
     public PostgRestService() {
         this.restTemplate = new RestTemplate();

@@ -25,7 +25,6 @@ public class ProxyController {
         String queryString = request.getQueryString();
 //        truyền header authorization
 
-        System.out.println("request: " + request);
 
         return postgRestService.forwardRequest(
                 request.getMethod(),

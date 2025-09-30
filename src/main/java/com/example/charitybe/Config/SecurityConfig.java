@@ -11,14 +11,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // tắt CSRF cho API
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/",
-                                "/api/v1/**"
-                        ).permitAll() // cho phép proxy
-                        .anyRequest().authenticated()          // các route khác phải login
+                        .anyRequest().permitAll()
                 );
+//                .csrf(csrf -> csrf.disable()) // tắt CSRF cho API
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(
+//                                "/**",
+//                                "/swagger-ui/index.html",
+//                                "/api/v1/**"
+//                        ).permitAll() // cho phép proxy
+//                        .anyRequest().authenticated()          // các route khác phải login
+//                );
+
 
 
         return http.build();
