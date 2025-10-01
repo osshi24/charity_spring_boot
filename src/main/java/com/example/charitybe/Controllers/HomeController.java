@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 public class HomeController {
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${spring.application.server_postgrest}")
+    private String postgrestUrl;
 
 
     @GetMapping("/")
@@ -25,7 +28,7 @@ public class HomeController {
 
     @GetMapping(value = "/docs", produces = "application/json")
     public ResponseEntity<String> getSpec() throws JsonProcessingException {
-        String url = "http://54.251.182.3:3000"; // PostgREST root endpoint
+        String url = postgrestUrl; // PostgREST root endpoint
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", "application/openapi+json");
 
@@ -38,7 +41,7 @@ public class HomeController {
         JsonNode root = mapper.readTree(response.getBody());
 
         ((ObjectNode) root).putArray("servers")
-                .addObject().put("url", "http://54.251.182.3:3000");
+                .addObject().put("url", postgrestUrl);
         return ResponseEntity.ok(mapper.writeValueAsString(root));
     }
 }
