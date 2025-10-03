@@ -24,8 +24,8 @@ public class PostgRestService {
     }
 
     public ResponseEntity<String> forwardRequest(String method, String path,
-            String queryString, String body,
-            HttpServletRequest request) {
+                                                 String queryString, String body,
+                                                 HttpServletRequest request) {
         try {
             // Xây dựng URL
             StringBuilder urlBuilder = new StringBuilder(postgrestUrl + path);
