@@ -16,7 +16,14 @@ jobs:
           git reset --hard
           git pull origin main
 
-      - name: Start/Restart Spring Boot with PM2 (Dev mode)
+      - name: Restart Spring Boot with PM2
+        shell: bash -l {0}  # 👈 quan trọng – dùng shell login để load ~/.bashrc
         run: |
+          # Load nvm thủ công (phòng trường hợp shell -l vẫn chưa load hết)
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          export PATH="$HOME/.nvm/versions/node/v20.19.5/bin:$PATH"
+
           cd ~/charity_spring_boot/
           pm2 restart springboot-dev || pm2 start "mvn spring-boot:run" --name springboot-dev
+      
