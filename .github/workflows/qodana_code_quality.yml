@@ -16,44 +16,7 @@ jobs:
           git reset --hard
           git pull origin main
 
-      - name: Ensure Node.js and PM2 are installed
-        run: |
-          # Kiểm tra node
-          if ! command -v node &> /dev/null; then
-            echo "Node.js not found. Installing..."
-            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-          fi
-
-          # Cài PM2 nếu chưa có
-          if ! command -v pm2 &> /dev/null; then
-            echo "PM2 not found. Installing..."
-            sudo npm install -g pm2
-          fi
-
-          # In version để debug
-          node -v
-          pm2 -v
-
       - name: Start/Restart Spring Boot with PM2 (Dev mode)
         run: |
           cd ~/charity_spring_boot/
           pm2 restart springboot-dev || pm2 start "mvn spring-boot:run" --name springboot-dev
-
-      - name: Cleanup old builds (optional)
-        run: |
-          cd ~/charity_spring_boot/
-          find target/ -type f -name "*.log" -mtime +7 -exec rm {} \;
-          find target/ -type d \( \
-            -name "dependency" -o \
-            -name "surefire-reports" -o \
-            -name "failsafe-reports" -o \
-            -name "test-classes" -o \
-            -name "classes" -o \
-            -name "generated-sources" -o \
-            -name "generated-test-sources" -o \
-            -name "maven-status" -o \
-            -name "maven-archiver" -o \
-            -name "original" \
-          \) -mtime +7 -exec rm -rf {} \;
-          echo "Old build files cleaned up."
