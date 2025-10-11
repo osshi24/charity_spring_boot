@@ -1,6 +1,7 @@
 package com.example.charitybe.Services;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,17 +14,18 @@ import java.util.Enumeration;
 
 @Service
 public class PostgRestService {
-
     private final RestTemplate restTemplate;
-    private final String postgrestUrl = "http://54.251.182.3:3000/"; // URL PostgREST
+
+    @Value("${spring.application.server_postgrest}")
+    private String postgrestUrl;
 
     public PostgRestService() {
         this.restTemplate = new RestTemplate();
     }
 
     public ResponseEntity<String> forwardRequest(String method, String path,
-            String queryString, String body,
-            HttpServletRequest request) {
+                                                 String queryString, String body,
+                                                 HttpServletRequest request) {
         try {
             // Xây dựng URL
             StringBuilder urlBuilder = new StringBuilder(postgrestUrl + path);

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class Config {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,8 +32,10 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers("/api/v1/**").permitAll() // cho phép proxy
-                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                                                .anyRequest().permitAll());
+                                                .requestMatchers("/swagger/index.html/**").permitAll() // cho phép proxy
+                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                                .anyRequest().permitAll()
+                                );
 
                 return http.build();
         }

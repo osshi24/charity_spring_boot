@@ -11,3 +11,4 @@ public class AuthResponseDTO<T> {
     private T userInfo;
 
 }
+
