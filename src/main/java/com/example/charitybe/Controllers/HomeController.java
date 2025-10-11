@@ -23,7 +23,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to the Charity API ^^! update ";
+        return "Welcome to the Charity API ^^! update aaa ";
     }
 
     @GetMapping(value = "/docs", produces = "application/json")
