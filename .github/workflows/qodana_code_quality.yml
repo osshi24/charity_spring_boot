@@ -16,6 +16,25 @@ jobs:
           git reset --hard
           git pull origin main
 
+      - name: Ensure Node.js and PM2 are installed
+        run: |
+          # Kiểm tra node
+          if ! command -v node &> /dev/null; then
+            echo "Node.js not found. Installing..."
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+          fi
+
+          # Cài PM2 nếu chưa có
+          if ! command -v pm2 &> /dev/null; then
+            echo "PM2 not found. Installing..."
+            sudo npm install -g pm2
+          fi
+
+          # In version để debug
+          node -v
+          pm2 -v
+
       - name: Start/Restart Spring Boot with PM2 (Dev mode)
         run: |
           cd ~/charity_spring_boot/
