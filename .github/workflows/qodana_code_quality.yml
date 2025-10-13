@@ -13,8 +13,8 @@ jobs:
       - name: Git pull latest code
         run: |
           cd ~/charity_spring_boot/
+          git fetch origin main
           git reset --hard
-          git pull origin main
 
       - name: Restart Spring Boot with PM2
         shell: bash -l {0}  # 👈 quan trọng – dùng shell login để load ~/.bashrc
