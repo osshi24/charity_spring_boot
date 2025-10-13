@@ -16,25 +16,14 @@ jobs:
           git reset --hard
           git pull origin main
 
-      - name: Start/Restart Spring Boot with PM2 (Dev mode)
+      - name: Restart Spring Boot with PM2
+        shell: bash -l {0}  # 👈 quan trọng – dùng shell login để load ~/.bashrc
         run: |
+          # Load nvm thủ công (phòng trường hợp shell -l vẫn chưa load hết)
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          export PATH="$HOME/.nvm/versions/node/v20.19.5/bin:$PATH"
+
           cd ~/charity_spring_boot/
           pm2 restart springboot-dev || pm2 start "mvn spring-boot:run" --name springboot-dev
-
-      - name: Cleanup old builds (optional)
-        run: |
-          cd ~/charity_spring_boot/
-          find target/ -type f -name "*.log" -mtime +7 -exec rm {} \;
-          find target/ -type d \( \
-            -name "dependency" -o \
-            -name "surefire-reports" -o \
-            -name "failsafe-reports" -o \
-            -name "test-classes" -o \
-            -name "classes" -o \
-            -name "generated-sources" -o \
-            -name "generated-test-sources" -o \
-            -name "maven-status" -o \
-            -name "maven-archiver" -o \
-            -name "original" \
-          \) -mtime +7 -exec rm -rf {} \;
-          echo "Old build files cleaned up."
+      
