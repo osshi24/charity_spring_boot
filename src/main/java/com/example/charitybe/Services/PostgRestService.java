@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
 
 import java.util.Enumeration;
 
@@ -20,7 +22,8 @@ public class PostgRestService {
     private String postgrestUrl;
 
     public PostgRestService() {
-        this.restTemplate = new RestTemplate();
+        // Dùng HttpComponentsClientHttpRequestFactory để hỗ trợ PATCH
+        this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
 
     public ResponseEntity<String> forwardRequest(String method, String path,
@@ -43,6 +46,11 @@ public class PostgRestService {
                 }
             }
 
+            // Thêm header để PostgREST trả về dữ liệu bản ghi vừa tạo
+            if ("POST".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method)) {
+                headers.add("Prefer", "return=representation");
+            }
+
             // Tạo request entity
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
@@ -54,7 +62,6 @@ public class PostgRestService {
                     String.class);
 
         } catch (HttpStatusCodeException ex) {
-            // Trả nguyên status + body từ PostgREST
             return ResponseEntity
                     .status(ex.getStatusCode())
                     .body(ex.getResponseBodyAsString());
