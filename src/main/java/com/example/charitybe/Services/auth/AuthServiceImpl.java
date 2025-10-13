@@ -1,11 +1,14 @@
 package com.example.charitybe.Services.auth;
 
 import java.time.Instant;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.charitybe.Entites.User;
 import com.example.charitybe.Repository.UserRepository;
@@ -35,17 +38,26 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // System.out.println("usrrr" + user);
-        // if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-        // throw new BadCredentialsException("Mật khẩu không hợp lệ");
-        // }
+        if (!passwordEncoder.matches(password, user.getMat_khau_hash())) {
+            throw new BadCredentialsException("Mật khẩu không hợp lệ");
+        }
         UserResponseDTO response = userMapper.toDTO(user);
         System.out.println("resposnreeee" + response);
-        String accessToken = jwtService.generateAccessToken(user.getId(), "Admin");
+        // String accessToken = jwtService.generateAccessToken(user.getId(), "Admin");
+                String accessToken = jwtService.generateAccessToken(user.getId());
+
         System.out.println("accrssToken" + accessToken);
         return new AuthResponseDTO<>(accessToken, response);
     }
 
     public UserResponseDTO register(RegisterRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        if(userOptional.isPresent()) {
+            throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, 
+            "Email address already in use." 
+        );
+        }
         User newUser = new User();
         newUser.setEmail(request.getEmail());
         newUser.setMat_khau_hash(passwordEncoder.encode(request.getPassword()));

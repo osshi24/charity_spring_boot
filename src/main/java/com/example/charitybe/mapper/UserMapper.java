@@ -19,6 +19,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setHo(user.getHo());
         dto.setTen(user.getTen());
+        dto.setSo_dien_thoai(user.getSo_dien_thoai());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         if (user.getNgay_sinh() != null) {
             dto.setNgay_sinh(user.getNgay_sinh().format(formatter));

@@ -21,10 +21,10 @@ public class JwtService {
     @Value("${jwt.refreshToken.expiration}")
     private long refreshTokenExpiration;
 
-    public String generateAccessToken(Long userId, String roleName) {
+    public String generateAccessToken(Long userId) {
         return JWT.create()
                 .withSubject(userId.toString())
-                .withClaim("role", roleName)
+                // .withClaim("role", roleName)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .sign(Algorithm.HMAC256(secret));
     }
