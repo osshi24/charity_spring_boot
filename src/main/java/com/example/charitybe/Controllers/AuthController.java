@@ -42,4 +42,9 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Hello World";
+    }
+
 }
