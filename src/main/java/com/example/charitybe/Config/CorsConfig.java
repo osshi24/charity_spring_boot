@@ -25,7 +25,7 @@ public class CorsConfig {
                          // .allowedOrigins("http://localhost:3000")
                          .allowedOriginPatterns("*")
                          // 2. Chỉ định các phương thức HTTP được phép
-                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
 
                          // 3. Cho phép các header tùy chỉnh (Authorization, Content-Type, v.v.)
                          .allowedHeaders("*")
