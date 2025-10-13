@@ -22,11 +22,11 @@ public class CorsConfig {
                 registry.addMapping("/api/v1/**")
 
                         // 1. Chỉ định nguồn gốc được phép (thay đổi theo frontend của bạn)
-                        .allowedOrigins("*")
-
+                        // .allowedOrigins("http://localhost:3000")
+                        .allowedOriginPatterns("*")
                         // 2. Chỉ định các phương thức HTTP được phép
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-
+                
                         // 3. Cho phép các header tùy chỉnh (Authorization, Content-Type, v.v.)
                         .allowedHeaders("*")
 
