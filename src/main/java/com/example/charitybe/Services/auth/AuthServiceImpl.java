@@ -20,6 +20,7 @@ import com.example.charitybe.dto.auth.RegisterRequest;
 import com.example.charitybe.dto.user.UserResponseDTO;
 import com.example.charitybe.enums.TrangThaiNguoiDungEnum;
 import com.example.charitybe.enums.VaiTroEnum;
+import com.example.charitybe.exceptions.DuplicateEmailException;
 import com.example.charitybe.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -55,9 +56,8 @@ public class AuthServiceImpl implements AuthService {
     public UserResponseDTO register(RegisterRequest request) {
         Optional<NguoiDung> userOptional = userRepository.findByEmail(request.getEmail());
         if (userOptional.isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Email address already in use.");
+            // Chỉ ném exception nghiệp vụ
+            throw new DuplicateEmailException("Email address already in use.");
         }
         NguoiDung newUser = new NguoiDung();
         newUser.setEmail(request.getEmail());
