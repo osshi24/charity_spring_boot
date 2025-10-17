@@ -5,8 +5,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,18 +21,10 @@ public class JwtService {
     @Value("${jwt.refreshToken.expiration}")
     private long refreshTokenExpiration;
 
-
-    @PostConstruct
-    public void printSecretKey() {
-        // DÙNG DÒNG NÀY ĐỂ XEM KHÓA BÍ MẬT TRONG CONSOLE
-        System.out.println("========================================================================");
-        System.out.println(">>> JWT SECRET KEY TRONG SPRING BOOT CỦA BẠN LÀ: " + secret);
-        System.out.println("========================================================================");
-    }
     public String generateAccessToken(Long userId) {
         return JWT.create()
                 .withSubject(userId.toString())
-                .withClaim("role", "super_admin")
+                // .withClaim("role", roleName)
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .sign(Algorithm.HMAC256(secret));
     }

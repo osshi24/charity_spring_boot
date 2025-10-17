@@ -24,7 +24,7 @@ public class Config {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
-                                .cors(Customizer.withDefaults())
+                                // .cors(Customizer.withDefaults())
                                 .csrf(csrf -> csrf.disable()) // tắt CSRF cho API
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -32,6 +32,7 @@ public class Config {
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers("/api/v1/**").permitAll() // cho phép proxy
+
                                                 .requestMatchers("/swagger/index.html/**").permitAll() // cho phép proxy
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                                 .anyRequest().permitAll()
