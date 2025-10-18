@@ -1,107 +1,22 @@
-// package com.example.charitybe.Services;
-
-// import jakarta.servlet.http.HttpServletRequest;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.http.HttpEntity;
-// import org.springframework.http.HttpHeaders;
-// import org.springframework.http.HttpMethod;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.stereotype.Service;
-// import org.springframework.web.client.RestTemplate;
-// import org.springframework.web.client.HttpStatusCodeException;
-// import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-
-
-// import java.util.Enumeration;
-
-// @Service
-// public class PostgRestService {
-//     private final RestTemplate restTemplate;
-
-//     @Value("${spring.application.server_postgrest}")
-//     private String postgrestUrl;
-
-//     public PostgRestService() {
-//         // Dùng HttpComponentsClientHttpRequestFactory để hỗ trợ PATCH
-//         this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
-//     }
-
-//     public ResponseEntity<String> forwardRequest(String method, String path,
-//                                                  String queryString, String body,
-//                                                  HttpServletRequest request) {
-//         try {
-//             // Xây dựng URL
-//             StringBuilder urlBuilder = new StringBuilder(postgrestUrl + path);
-//             if (queryString != null) {
-//                 urlBuilder.append("?").append(queryString);
-//             }
-
-//             // Copy headers
-//             HttpHeaders headers = new HttpHeaders();
-//             Enumeration<String> headerNames = request.getHeaderNames();
-//             while (headerNames.hasMoreElements()) {
-//                 String headerName = headerNames.nextElement();
-//                 if (!skipHeader(headerName)) {
-//                     headers.add(headerName, request.getHeader(headerName));
-//                 }
-//             }
-
-//             // Thêm header để PostgREST trả về dữ liệu bản ghi vừa tạo
-//             if ("POST".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method)) {
-//                 headers.add("Prefer", "return=representation");
-//             }
-
-//             // Tạo request entity
-//             HttpEntity<String> entity = new HttpEntity<>(body, headers);
-
-//             // Gọi PostgREST
-//             return restTemplate.exchange(
-//                     urlBuilder.toString(),
-//                     HttpMethod.valueOf(method),
-//                     entity,
-//                     String.class);
-
-//         } catch (HttpStatusCodeException ex) {
-//             return ResponseEntity
-//                     .status(ex.getStatusCode())
-//                     .body(ex.getResponseBodyAsString());
-//         } catch (Exception e) {
-//             return ResponseEntity.status(500)
-//                     .body("{\"error\":\"" + e.getMessage() + "\"}");
-//         }
-//     }
-
-//     private boolean skipHeader(String headerName) {
-//         String lower = headerName.toLowerCase();
-//         return lower.equals("host") ||
-//                 lower.equals("content-length") ||
-//                 lower.startsWith("x-forwarded");
-//     }
-// }
-
-
-
-
-
-
-
 package com.example.charitybe.Services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Enumeration;
 
 @Service
 public class PostgRestService {
+
+    private static final Logger log = LoggerFactory.getLogger(PostgRestService.class);
+
     private final RestTemplate restTemplate;
 
     @Value("${spring.application.server_postgrest}")
@@ -109,7 +24,6 @@ public class PostgRestService {
 
     public PostgRestService() {
         // Dùng HttpComponentsClientHttpRequestFactory để hỗ trợ PATCH
-
         this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
 
@@ -121,51 +35,54 @@ public class PostgRestService {
             // BƯỚC 1: XÂY DỰNG URL ĐẾN POSTGREST
             // ============================================================
             StringBuilder urlBuilder = new StringBuilder(postgrestUrl + path);
-            if (queryString != null) {
+            if (queryString != null && !queryString.isEmpty()) {
                 urlBuilder.append("?").append(queryString);
             }
+            String finalUrl = urlBuilder.toString();
+            log.debug("➡️ [PostgREST Forward] URL: {}", finalUrl);
 
             // ============================================================
             // BƯỚC 2: COPY HEADERS TỪ REQUEST GỐC
             // ============================================================
             HttpHeaders headers = new HttpHeaders();
             Enumeration<String> headerNames = request.getHeaderNames();
+            log.debug("📦 Incoming Headers:");
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
-                // Bỏ qua một số headers không cần thiết
                 if (!skipHeader(headerName)) {
-                    headers.add(headerName, request.getHeader(headerName));
+                    String headerValue = request.getHeader(headerName);
+                    headers.add(headerName, headerValue);
+                    log.debug("   → {}: {}", headerName, headerValue);
                 }
             }
 
-            // Thêm header để PostgREST trả về dữ liệu bản ghi vừa tạo/cập nhật
+            // Thêm header Prefer để PostgREST trả dữ liệu bản ghi mới
             if ("POST".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method)) {
                 headers.add("Prefer", "return=representation");
+                log.debug("✅ Added Prefer header: return=representation");
             }
 
             // ============================================================
             // BƯỚC 3: GỌI POSTGREST
             // ============================================================
+            log.debug("📤 Request Body: {}", body);
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
-            
+
+            log.info("🚀 Forwarding [{}] request to PostgREST: {}", method, finalUrl);
             ResponseEntity<String> response = restTemplate.exchange(
-                    urlBuilder.toString(),
+                    finalUrl,
                     HttpMethod.valueOf(method),
                     entity,
-                    String.class);
+                    String.class
+            );
 
             // ============================================================
-            // BƯỚC 4: XÓA CORS HEADERS TỪ POSTGREST RESPONSE
+            // BƯỚC 4: DỌN DẸP CORS HEADERS
             // ============================================================
-            // Đây là bước QUAN TRỌNG NHẤT để fix lỗi CORS!
-            // PostgREST có thể trả về Access-Control-Allow-Origin: *
-            // Nếu không xóa, Spring Boot sẽ thêm header của nó
-            // → Kết quả: 2 giá trị CORS → LỖI!
-            
             HttpHeaders cleanHeaders = new HttpHeaders();
             cleanHeaders.putAll(response.getHeaders());
-            
-            // Xóa TẤT CẢ các CORS-related headers từ PostgREST
+            log.debug("🧹 Cleaning CORS headers from PostgREST response...");
+
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
@@ -176,38 +93,32 @@ public class PostgRestService {
             cleanHeaders.remove("Access-Control-Request-Headers");
 
             // ============================================================
-            // BƯỚC 5: TRẢ VỀ RESPONSE SẠCH
+            // BƯỚC 5: TRẢ RESPONSE SẠCH
             // ============================================================
-            // Spring Boot CorsConfig.java sẽ TỰ ĐỘNG thêm CORS headers đúng
-            // Không cần lo lắng về CORS ở đây nữa
-            
+            log.debug("✅ Response Status: {}", response.getStatusCode());
+            log.debug("✅ Response Body: {}", response.getBody());
+
             return ResponseEntity
                     .status(response.getStatusCode())
-                    .headers(cleanHeaders)  // ✅ Headers đã sạch, không còn CORS từ PostgREST
+                    .headers(cleanHeaders)
                     .body(response.getBody());
 
         } catch (HttpStatusCodeException ex) {
-            // Xử lý lỗi HTTP từ PostgREST
+            log.error("❌ HTTP Error from PostgREST [{}]: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
             return ResponseEntity
                     .status(ex.getStatusCode())
                     .body(ex.getResponseBodyAsString());
-                    
         } catch (Exception e) {
-            // Xử lý lỗi chung
+            log.error("🔥 Exception forwarding request to PostgREST: {}", e.getMessage(), e);
             return ResponseEntity.status(500)
                     .body("{\"error\":\"" + e.getMessage() + "\"}");
         }
     }
 
-    /**
-     * Kiểm tra xem header có nên được skip không
-     * @param headerName Tên header
-     * @return true nếu cần skip, false nếu cần forward
-     */
     private boolean skipHeader(String headerName) {
         String lower = headerName.toLowerCase();
-        return lower.equals("host") ||              // Host sẽ khác khi forward
-               lower.equals("content-length") ||     // Content-Length tự động tính
-               lower.startsWith("x-forwarded");      // X-Forwarded-* không cần thiết
+        return lower.equals("host") ||
+                lower.equals("content-length") ||
+                lower.startsWith("x-forwarded");
     }
 }
