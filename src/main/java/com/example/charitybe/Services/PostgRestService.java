@@ -80,6 +80,11 @@ public class PostgRestService {
             // BƯỚC 4: DỌN DẸP CORS HEADERS
             // ============================================================
             HttpHeaders cleanHeaders = new HttpHeaders();
+            response.getHeaders().forEach((key, value) -> {
+                if (!key.equalsIgnoreCase("Transfer-Encoding")) {
+                    cleanHeaders.put(key, value);
+                }
+            });
             cleanHeaders.putAll(response.getHeaders());
             log.debug("🧹 Cleaning CORS headers from PostgREST response...");
 
