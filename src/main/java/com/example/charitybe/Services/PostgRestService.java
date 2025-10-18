@@ -78,19 +78,20 @@ public class PostgRestService {
             );
 
             // ============================================================
-            // BƯỚC 4: DỌN DẸP CORS HEADERS
-            // ============================================================
+// BƯỚC 4: DỌN DẸP HEADER KHÔNG CẦN THIẾT
+// ============================================================
             HttpHeaders cleanHeaders = new HttpHeaders();
             response.getHeaders().forEach((key, value) -> {
                 String lower = key.toLowerCase();
+                // Loại bỏ header có thể gây xung đột
                 if (!lower.equals("transfer-encoding") &&
-                        !lower.equals("content-length")) {
+                        !lower.equals("content-length") &&
+                        !lower.equals("connection")) {
                     cleanHeaders.put(key, value);
                 }
             });
-            cleanHeaders.putAll(response.getHeaders());
-            log.debug("🧹 Cleaning CORS headers from PostgREST response...");
 
+// Xóa các header CORS có thể gây lỗi
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
             cleanHeaders.remove(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
@@ -100,16 +101,18 @@ public class PostgRestService {
             cleanHeaders.remove("Access-Control-Request-Method");
             cleanHeaders.remove("Access-Control-Request-Headers");
 
-            // ============================================================
-            // BƯỚC 5: TRẢ RESPONSE SẠCH
-            // ============================================================
+// ============================================================
+// BƯỚC 5: TRẢ RESPONSE SẠCH
+// ============================================================
             log.debug("✅ Response Status: {}", response.getStatusCode());
+            log.debug("✅ Response Headers: {}", cleanHeaders);
             log.debug("✅ Response Body: {}", response.getBody());
 
             return ResponseEntity
                     .status(response.getStatusCode())
                     .headers(cleanHeaders)
                     .body(response.getBody());
+
 
         } catch (HttpStatusCodeException ex) {
             log.error("❌ HTTP Error from PostgREST [{}]: {}", ex.getStatusCode(), ex.getResponseBodyAsString());
