@@ -5,10 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 import java.util.Enumeration;
 
@@ -34,11 +39,7 @@ public class PostgRestService {
             // ============================================================
             // BƯỚC 1: XÂY DỰNG URL ĐẾN POSTGREST
             // ============================================================
-            StringBuilder urlBuilder = new StringBuilder(postgrestUrl + path);
-            if (queryString != null && !queryString.isEmpty()) {
-                urlBuilder.append("?").append(queryString);
-            }
-            String finalUrl = urlBuilder.toString();
+            URI finalUrl = buildTargetUri(path, queryString);
             log.debug("➡️ [PostgREST Forward] URL: {}", finalUrl);
 
             // ============================================================
@@ -115,6 +116,10 @@ public class PostgRestService {
             return ResponseEntity
                     .status(ex.getStatusCode())
                     .body(ex.getResponseBodyAsString());
+        } catch (ResourceAccessException ex) {
+            log.error("🌐 Unable to reach PostgREST at {}: {}", postgrestUrl, ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body("{\"error\":\"PostgREST unreachable\"}");
         } catch (Exception e) {
             log.error("🔥 Exception forwarding request to PostgREST: {}", e.getMessage(), e);
             return ResponseEntity.status(500)
@@ -127,5 +132,17 @@ public class PostgRestService {
         return lower.equals("host") ||
                 lower.equals("content-length") ||
                 lower.startsWith("x-forwarded");
+    }
+
+    private URI buildTargetUri(String path, String queryString) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(postgrestUrl);
+        if (path != null && !path.isBlank()) {
+            String normalized = path.startsWith("/") ? path : "/" + path;
+            builder.path(normalized);
+        }
+        if (queryString != null && !queryString.isBlank()) {
+            builder.query(queryString);
+        }
+        return builder.build(true).toUri();
     }
 }

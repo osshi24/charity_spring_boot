@@ -22,10 +22,8 @@ public class ProxyController {
             HttpServletRequest request,
             @RequestBody(required = false) String body) {
 
-        String path = request.getRequestURI().substring("/api/v1/".length());
+        String path = extractForwardPath(request);
         String queryString = request.getQueryString();
-//        truyền header authorization
-
 
         return postgRestService.forwardRequest(
                 request.getMethod(),
@@ -36,5 +34,20 @@ public class ProxyController {
         );
     }
 
-   
+    private String extractForwardPath(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        String prefix = contextPath + "/api/v1";
+        String requestUri = request.getRequestURI();
+
+        if (!requestUri.startsWith(prefix)) {
+            return requestUri.startsWith("/") ? requestUri.substring(1) : requestUri;
+        }
+
+        String path = requestUri.substring(prefix.length());
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
+    }
+
 }
