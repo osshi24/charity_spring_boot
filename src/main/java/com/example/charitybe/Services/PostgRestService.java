@@ -81,7 +81,9 @@ public class PostgRestService {
             // ============================================================
             HttpHeaders cleanHeaders = new HttpHeaders();
             response.getHeaders().forEach((key, value) -> {
-                if (!key.equalsIgnoreCase("Transfer-Encoding")) {
+                String lower = key.toLowerCase();
+                if (!lower.equals("transfer-encoding") &&
+                        !lower.equals("content-length")) {
                     cleanHeaders.put(key, value);
                 }
             });
