@@ -109,6 +109,7 @@ public class PostgRestService {
 
     public PostgRestService() {
         // Dùng HttpComponentsClientHttpRequestFactory để hỗ trợ PATCH
+
         this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
 
