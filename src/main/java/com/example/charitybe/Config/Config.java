@@ -46,6 +46,7 @@ public class Config {
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/du_an/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/tin_tuc/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/danh_muc_du_an/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/auth/**").permitAll()
 
                                                 // Swagger/Docs
                                                 .requestMatchers("/", "/docs", "/swagger/**").permitAll()
