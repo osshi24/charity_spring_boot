@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Config {
 
+        private final JwtAuthenticationFilter jwtAuthFilter;
+
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
@@ -29,12 +32,26 @@ public class Config {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                                // Add JWT authentication filter
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
                                 .authorizeHttpRequests(auth -> auth
+                                                // Public endpoints - không cần authentication
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                                .requestMatchers("/api/v1/**").permitAll() // cho phép proxy
-                                                .requestMatchers("/swagger/index.html/**").permitAll() // cho phép proxy
-                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                                .anyRequest().permitAll()
+
+                                                // Auth endpoints
+                                                .requestMatchers("/api/auth/**").permitAll()
+
+                                                // Public read endpoints
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/du_an/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/tin_tuc/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/danh_muc_du_an/**").permitAll()
+
+                                                // Swagger/Docs
+                                                .requestMatchers("/", "/docs", "/swagger/**").permitAll()
+
+                                                // All other requests require authentication
+                                                .anyRequest().authenticated()
                                 );
 
                 return http.build();
