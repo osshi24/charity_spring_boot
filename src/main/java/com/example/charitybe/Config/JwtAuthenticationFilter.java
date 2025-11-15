@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Skip if no Authorization header or not Bearer token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("no token found");
             filterChain.doFilter(request, response);
             return;
         }
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtService.extractEmail(jwt);
                 String role = jwtService.extractRole(jwt);
                 Long userId = jwtService.extractUserId(jwt);
-
+                System.out.println("rolereeeeeeeeeeee" + role);
                 // Create authorities from role
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority(role)

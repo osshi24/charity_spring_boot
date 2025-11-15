@@ -1,6 +1,7 @@
 package com.example.charitybe.Services;
 
 import com.example.charitybe.dto.auth.*;
+import com.example.charitybe.dto.user.UserResponseDTO;
 import com.example.charitybe.entities.NguoiDung;
 import com.example.charitybe.entities.RefreshToken;
 import com.example.charitybe.enums.TrangThaiNguoiDung;
@@ -56,16 +57,22 @@ public class AuthService {
 
         // Save refresh token to database
         saveRefreshToken(nguoiDung.getId(), refreshToken);
-
-        return new AuthResponseDTO(
-                accessToken,
-                refreshToken,
-                accessTokenExpiration / 1000, // Convert to seconds
+        UserResponseDTO userInfo = new UserResponseDTO(
                 nguoiDung.getId(),
                 nguoiDung.getEmail(),
                 nguoiDung.getVaiTro().getValue(),
                 nguoiDung.getTen(),
-                nguoiDung.getHo()
+                nguoiDung.getHo());
+        return new AuthResponseDTO(
+                accessToken,
+                refreshToken,
+                accessTokenExpiration / 1000, // Convert to seconds
+                userInfo
+        // nguoiDung.getId(),
+        // nguoiDung.getEmail(),
+        // nguoiDung.getVaiTro().getValue(),
+        // nguoiDung.getTen(),
+        // nguoiDung.getHo()
         );
     }
 
@@ -94,16 +101,22 @@ public class AuthService {
 
         // Save new refresh token
         saveRefreshToken(nguoiDung.getId(), refreshToken);
-
-        return new AuthResponseDTO(
-                accessToken,
-                refreshToken,
-                accessTokenExpiration / 1000,
+        UserResponseDTO userInfo = new UserResponseDTO(
                 nguoiDung.getId(),
                 nguoiDung.getEmail(),
                 nguoiDung.getVaiTro().getValue(),
                 nguoiDung.getTen(),
-                nguoiDung.getHo()
+                nguoiDung.getHo());
+        return new AuthResponseDTO(
+                accessToken,
+                refreshToken,
+                accessTokenExpiration / 1000,
+                userInfo
+        // nguoiDung.getId(),
+        // nguoiDung.getEmail(),
+        // nguoiDung.getVaiTro().getValue(),
+        // nguoiDung.getTen(),
+        // nguoiDung.getHo()
         );
     }
 
@@ -137,17 +150,23 @@ public class AuthService {
 
         // Generate new access token
         String newAccessToken = jwtService.generateAccessToken(nguoiDung);
-
-        return new AuthResponseDTO(
-                newAccessToken,
-                refreshTokenStr, // Keep the same refresh token
-                accessTokenExpiration / 1000,
+        UserResponseDTO userInfo = new UserResponseDTO(
                 nguoiDung.getId(),
                 nguoiDung.getEmail(),
                 nguoiDung.getVaiTro().getValue(),
                 nguoiDung.getTen(),
-                nguoiDung.getHo()
-        );
+                nguoiDung.getHo());
+        return new AuthResponseDTO(
+                newAccessToken,
+                refreshTokenStr, // Keep the same refresh token
+                accessTokenExpiration / 1000,
+                userInfo
+                // nguoiDung.getId(),
+                // nguoiDung.getEmail(),
+                // nguoiDung.getVaiTro().getValue(),
+                // nguoiDung.getTen(),
+                // nguoiDung.getHo()
+                );
     }
 
     @Transactional

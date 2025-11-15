@@ -13,9 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 import lombok.RequiredArgsConstructor;
-
 
 @Configuration
 @EnableWebSecurity
@@ -45,15 +43,18 @@ public class Config {
                                                 // Public read endpoints
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/du_an/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/tin_tuc/**").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/v1/danh_muc_du_an/**").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/danh_muc_du_an/**")
+                                                .permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
 
+                                                .requestMatchers(HttpMethod.POST, "/api/payments/process-vnpay")
+                                                .permitAll()
                                                 // Swagger/Docs
                                                 .requestMatchers("/", "/docs", "/swagger/**").permitAll()
 
                                                 // All other requests require authentication
-                                                .anyRequest().authenticated()
-                                );
+                                                .anyRequest().authenticated());
 
                 return http.build();
         }

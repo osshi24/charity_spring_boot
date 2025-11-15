@@ -37,6 +37,7 @@ public class PostgRestPermissionInterceptor {
         // ===== QUYÊN GÓP (quyen_gop) =====
         if (path.contains("/quyen_gop")) {
             if ("POST".equals(method)) {
+                System.out.println("222222222222222222222222222222222222");
                 // Anyone authenticated có thể quyên góp
                 return true;
             }

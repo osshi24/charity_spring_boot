@@ -1,0 +1,29 @@
+version: '3.8'
+
+
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: charity_db_v2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+      - ./db_backup.dump:/db_backup.dump
+    ports:
+      - "5433:5432"
+
+  api:
+    image: postgrest/postgrest
+    restart: always
+    environment:
+      PGRST_DB_URI: "postgres://postgres:password@db:5432/charity_db_v2"
+      PGRST_DB_SCHEMA: "public"
+      PGRST_DB_ANON_ROLE: "web_anon"
+      PGRST_JWT_SECRET: "secret_keysecret_keysecret_keysecret_keysecret_key"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
