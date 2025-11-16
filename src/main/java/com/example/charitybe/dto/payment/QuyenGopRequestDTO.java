@@ -23,5 +23,7 @@ public class QuyenGopRequestDTO {
 
     private String trangThaiThanhToan;
     private String maGiaoDich;
+    private String donViTienTe;
     private String loiNhan;
+    private Integer soTienThuc;
 }

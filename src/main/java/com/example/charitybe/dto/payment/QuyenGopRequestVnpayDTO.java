@@ -6,4 +6,5 @@ import lombok.Data;
 public class QuyenGopRequestVnpayDTO {
     private String loiNhan;
     private Long soTien;  
+    private String phuongThucThanhToan;
 }

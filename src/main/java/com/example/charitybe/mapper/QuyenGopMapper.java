@@ -24,7 +24,7 @@ public class QuyenGopMapper {
         dto.setTrangThaiThanhToan(quyenGop.getTrangThai());
         dto.setMaGiaoDich(quyenGop.getMaGiaoDich());
         dto.setLoiNhan(quyenGop.getLoiNhan());
-
+        dto.setSoTienThuc(quyenGop.getSoTienThuc());
         return dto;
     }
 
@@ -40,6 +40,8 @@ public class QuyenGopMapper {
         if (request.getTrangThaiThanhToan() != null) {
             payment.setTrangThai(TrangThaiThanhToan.valueOf(request.getTrangThaiThanhToan()));
         }
+        payment.setSoTienThuc(request.getSoTienThuc());
+        payment.setDonViTienTe(request.getDonViTienTe());
         payment.setMaGiaoDich(request.getMaGiaoDich());
         payment.setLoiNhan(request.getLoiNhan());
         return payment;

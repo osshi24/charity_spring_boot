@@ -21,4 +21,5 @@ public class QuyenGopResponseDTO {
     private TrangThaiThanhToan trangThaiThanhToan;
     private String maGiaoDich;
     private String loiNhan;
+    private Integer soTienThuc;
 }
