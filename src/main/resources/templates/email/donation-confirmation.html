@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .donation-info {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+             padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            align-items: baseline;
+            /* Quan trọng: Đảm bảo nhãn và giá trị căn trên cùng (hoặc dùng flex-start) */
+            
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+            /* In đậm nhãn */
+             color: #555;
+            flex-basis: 40%;
+            /* Đặt kích thước cố định cho nhãn */
+             min-width: 120px;
+            /* Đảm bảo nhãn không quá nhỏ */
+            
+        }
+
+        .value {
+            color: #333;
+            text-align: right;
+            /* Căn phải giá trị */
+             flex-grow: 1;
+            /* Cho phép giá trị co giãn và xuống hàng */
+             word-break: break-word;
+            /* Đảm bảo từ dài tự động xuống hàng */
+            
+        }
+
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            
+            /* Cần giữ nguyên kiểu xuống hàng và căn phải như .value */
+             text-align: right;
+             flex-grow: 1;
+             word-break: break-word;
+            
+        }
+
+        .footer {
+            background: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            font-size: 12px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🙏 Cảm ơn bạn đã quyên góp!</h1>
+    </div>
+
+    <div class="content">
+        <p>Xin chào <strong th:text="${tenNguoiDung}">Người dùng</strong>,</p>
+
+        <p>Chúng tôi đã nhận được khoản quyên góp của bạn. Cảm ơn bạn đã đóng góp vào dự án từ thiện!</p>
+
+        <div class="donation-info">
+            <h3 style="margin-top: 0; color: #667eea;">Thông tin quyên góp</h3>
+
+            <div class="info-row">
+                <span class="label">Mã giao dịch: </span>
+                <span class="value" th:text="${maGiaoDich}">TXN123456</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Dự án: </span>
+                <span class="value" th:text="${tenDuAn}">Tên dự án</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Số tiền quyên góp: </span>
+                <span class="amount"
+                    th:text="${#numbers.formatDecimal(soTien, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">1,000,000 VNĐ</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Phương thức thanh toán: </span>
+                <span class="value" th:text="${phuongThucThanhToan}">VNPay</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Thời gian: </span>
+                <span class="value" th:text="${thoiGian}">19/11/2025 15:47:18</span>
+            </div>
+
+            <div class="info-row" th:if="${loiNhan}">
+                <span class="label">Lời nhắn: </span>
+                <span class="value" th:text="${loiNhan}">Lời nhắn từ người quyên góp</span>
+            </div>
+        </div>
+
+        <p>Khoản quyên góp của bạn sẽ được sử dụng để hỗ trợ trực tiếp cho dự án. Chúng tôi sẽ cập nhật tiến độ sử dụng
+            quỹ thường xuyên trên website.</p>
+
+        <div style="text-align: center;">
+            <a th:href="${appUrl + '/du-an/' + maDuAn}" class="button">Xem chi tiết dự án</a>
+        </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #666;">
+            <strong>Lưu ý:</strong> Email này được gửi tự động. Vui lòng không trả lời email này.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p th:text="${appName}">Charity Platform</p>
+        <p>© 2024 - Bản quyền thuộc về <span th:text="${appName}">Charity Platform</span></p>
+        <p>
+            <a href="#" style="color: #fff; margin: 0 10px;">Chính sách</a> |
+            <a href="#" style="color: #fff; margin: 0 10px;">Liên hệ</a>
+        </p>
+    </div>
+</body>
+
+</html>

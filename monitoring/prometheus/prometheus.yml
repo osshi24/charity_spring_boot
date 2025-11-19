@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - "/etc/prometheus/alerts.yml"
+
+scrape_configs:
+  - job_name: 'charity-be' 
+    scheme: http
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:5555'] 
+    tls_config:
+      insecure_skip_verify: true

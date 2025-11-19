@@ -1,6 +1,7 @@
 package com.example.charitybe.dto.payment;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import com.example.charitybe.enums.TrangThaiThanhToan;
 
@@ -22,4 +23,5 @@ public class QuyenGopResponseDTO {
     private String maGiaoDich;
     private String loiNhan;
     private Integer soTienThuc;
+    private Instant thoiGianTao;
 }

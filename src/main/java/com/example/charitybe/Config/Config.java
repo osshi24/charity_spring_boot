@@ -44,8 +44,11 @@ public class Config {
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/du_an/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/tin_tuc/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/danh_muc_du_an/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/su_kien/**").permitAll()
+
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/quyen_gop/**").permitAll()
-                         
+                                                .requestMatchers(HttpMethod.GET, "/prometheus**").permitAll()
+
                                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
 

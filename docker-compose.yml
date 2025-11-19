@@ -1,6 +1,5 @@
 version: '3.8'
 
-
 services:
   db:
     image: postgres:17
@@ -14,6 +13,8 @@ services:
       - ./db_backup.dump:/db_backup.dump
     ports:
       - "5433:5432"
+    networks:
+      - charity-net # Đưa vào mạng chung
 
   api:
     image: postgrest/postgrest
@@ -27,3 +28,60 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    networks:
+      - charity-net # Đưa vào mạng chung
+
+  prometheus-charity:
+    image: prom/prometheus:latest
+    container_name: prometheus-charity
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - charity-net # Đưa vào mạng chung
+
+  grafana-charity:
+    image: grafana/grafana:11.0.0
+    container_name: grafana-charity
+    ports:
+      - "4000:4000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_SERVER_HTTP_PORT=4000
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus-charity
+    restart: unless-stopped
+    networks:
+      - charity-net # Đưa vào mạng chung
+  
+  # Dịch vụ APM: Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    restart: always
+    ports:
+      - "9411:9411"
+    networks:
+      - charity-net # Đưa vào mạng chung
+
+volumes:
+  prom_data:
+  grafana_data: 
+
+networks:
+  charity-net: # Định nghĩa mạng chung cho tất cả các services
+    driver: bridge

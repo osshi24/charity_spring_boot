@@ -20,11 +20,11 @@ public class QuyenGopMapper {
         dto.setMaDuAn(quyenGop.getMaDuAn());
         dto.setSoTien(quyenGop.getSoTien());
         dto.setPhuongThucThanhToan(quyenGop.getPhuongThucThanhToan().getValue());
-        dto.setPhuongThucThanhToan(quyenGop.getTrangThai().getValue());
         dto.setTrangThaiThanhToan(quyenGop.getTrangThai());
         dto.setMaGiaoDich(quyenGop.getMaGiaoDich());
         dto.setLoiNhan(quyenGop.getLoiNhan());
         dto.setSoTienThuc(quyenGop.getSoTienThuc());
+        dto.setThoiGianTao(quyenGop.getNgayTao() != null ? quyenGop.getNgayTao().toInstant() : null);
         return dto;
     }
 

@@ -6,10 +6,12 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.charitybe.Services.email.EmailService;
 import com.example.charitybe.Services.payment.PaymentService;
 import com.example.charitybe.dto.ApiResponseDTO;
 import com.example.charitybe.dto.payment.QuyenGopRequestDTO;
@@ -28,7 +30,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-   @PostMapping("/process-vnpay")
+    @PostMapping("/process-vnpay")
     public ResponseEntity<Map<String, String>> taoUrlThanhToan(
             HttpServletRequest request,
             @RequestBody QuyenGopRequestVnpayDTO thanhToanRequest) {
@@ -52,5 +54,7 @@ public class PaymentController {
                 201, quyenGop, "Create payment successful");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+ 
 
 }
