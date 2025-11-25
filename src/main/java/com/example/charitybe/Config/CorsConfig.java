@@ -5,35 +5,41 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
-
 @Configuration
 public class CorsConfig {
 
+<<<<<<< HEAD
      @Bean
      public WebMvcConfigurer corsConfigurer() {
          return new WebMvcConfigurer() {
              @Override
              public void addCorsMappings(CorsRegistry registry) {
                  registry.addMapping("/api/**")
+=======
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+>>>>>>> eda545f5a60ed1e739cb004ad830cb05541bf98b
 
-                         // 1. Chỉ định nguồn gốc được phép (thay đổi theo frontend của bạn)
-                         // .allowedOrigins("http://localhost:3000")
-                         .allowedOriginPatterns("*")
-                         // 2. Chỉ định các phương thức HTTP được phép
-                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                        // 1. Chỉ định nguồn gốc được phép (thay đổi theo frontend của bạn)
+                        // .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000") 
+                        .allowedOriginPatterns("*")
+                        // 2. Chỉ định các phương thức HTTP được phép
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
 
-                         // 3. Cho phép các header tùy chỉnh (Authorization, Content-Type, v.v.)
-                         .allowedHeaders("*")
+                        // 3. Cho phép các header tùy chỉnh (Authorization, Content-Type, v.v.)
+                        .allowedHeaders("*")
 
-                         // 4. Cho phép truyền thông tin xác thực (cookies, authorization headers)
-                         .allowCredentials(true)
+                        // 4. Cho phép truyền thông tin xác thực (cookies, authorization headers)
+                        .allowCredentials(true)
 
-                         // 5. Cache kết quả preflight request (giảm request OPTIONS)
-                         .maxAge(3600);
-             }
-         };
-     }
-
+                        // 5. Cache kết quả preflight request (giảm request OPTIONS)
+                        .maxAge(3600);
+            }
+        };
+    }
 
 }

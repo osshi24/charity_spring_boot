@@ -1,0 +1,2 @@
+=========================== Monitoring =================================
+charity_donation_total{status="success"}

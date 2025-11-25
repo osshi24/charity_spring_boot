@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #e74c3c; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; }
+        .footer { background: #333; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚠️ Thanh toán không thành công</h1>
+    </div>
+    
+    <div class="content">
+        <p>Xin chào <strong th:text="${tenNguoiDung}">Người dùng</strong>,</p>
+        
+        <p>Rất tiếc, giao dịch của bạn không thành công.</p>
+        
+        <p><strong>Mã giao dịch:</strong> <span th:text="${maGiaoDich}">TXN123</span></p>
+        <p><strong>Lý do:</strong> <span th:text="${reason}">Lỗi hệ thống</span></p>
+        
+        <p>Vui lòng thử lại hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+    </div>
+    
+    <div class="footer">
+        <p th:text="${appName}">Charity Platform</p>
+    </div>
+</body>
+</html>

@@ -25,8 +25,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -44,22 +44,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtService.extractEmail(jwt);
                 String role = jwtService.extractRole(jwt);
                 Long userId = jwtService.extractUserId(jwt);
-
+                System.out.println("rolereeeeeeeeeeee" + role);
                 // Create authorities from role
                 List<SimpleGrantedAuthority> authorities = List.of(
-                        new SimpleGrantedAuthority(role)
-                );
+                        new SimpleGrantedAuthority(role));
 
                 // Create authentication token
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null,
+                        authorities);
 
                 // Set additional details
                 authToken.setDetails(Map.of(
                         "userId", userId,
                         "role", role,
-                        "email", email
-                ));
+                        "email", email));
 
                 // Set authentication in SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authToken);
