@@ -73,6 +73,19 @@ public class QuyenGop {
     @Column(name = "ngay_tao", columnDefinition = "TIMESTAMPTZ", updatable = false)
     private OffsetDateTime ngayTao = OffsetDateTime.now();
 
+    // Blockchain fields
+    @Column(name = "blockchain_tx_hash", length = 66)
+    private String blockchainTxHash;
+
+    @Column(name = "blockchain_block_number")
+    private Long blockchainBlockNumber;
+
+    @Column(name = "blockchain_timestamp", columnDefinition = "TIMESTAMPTZ")
+    private OffsetDateTime blockchainTimestamp;
+
+    @Column(name = "blockchain_status", length = 50)
+    private String blockchainStatus; // PENDING, CONFIRMED, FAILED
+
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_nguoi_dung", referencedColumnName = "id", insertable = false, updatable = false)

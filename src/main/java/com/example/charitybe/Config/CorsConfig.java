@@ -15,7 +15,7 @@ public class CorsConfig {
          return new WebMvcConfigurer() {
              @Override
              public void addCorsMappings(CorsRegistry registry) {
-                 registry.addMapping("/api/v1/**")
+                 registry.addMapping("/api/**")
 
                          // 1. Chỉ định nguồn gốc được phép (thay đổi theo frontend của bạn)
                          // .allowedOrigins("http://localhost:3000")
