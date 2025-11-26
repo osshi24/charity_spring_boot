@@ -5,7 +5,6 @@ import java.time.Instant;
 
 import com.example.charitybe.enums.TrangThaiThanhToan;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

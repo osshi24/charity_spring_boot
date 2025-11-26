@@ -8,21 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig {
 
-<<<<<<< HEAD
-     @Bean
-     public WebMvcConfigurer corsConfigurer() {
-         return new WebMvcConfigurer() {
-             @Override
-             public void addCorsMappings(CorsRegistry registry) {
-                 registry.addMapping("/api/**")
-=======
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
->>>>>>> eda545f5a60ed1e739cb004ad830cb05541bf98b
 
                         // 1. Chỉ định nguồn gốc được phép (thay đổi theo frontend của bạn)
                         // .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000") 
