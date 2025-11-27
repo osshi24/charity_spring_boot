@@ -1,9 +1,12 @@
 package com.example.charitybe.mapper;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.example.charitybe.dto.payment.QuyenGopRequestDTO;
 import com.example.charitybe.dto.payment.QuyenGopResponseDTO;
+import com.example.charitybe.dto.quyengop.QuyenGopReportData;
 import com.example.charitybe.entities.QuyenGop;
 import com.example.charitybe.enums.PhuongThucThanhToan;
 import com.example.charitybe.enums.TrangThaiThanhToan;
@@ -45,5 +48,16 @@ public class QuyenGopMapper {
         payment.setMaGiaoDich(request.getMaGiaoDich());
         payment.setLoiNhan(request.getLoiNhan());
         return payment;
+    }
+
+    public List<QuyenGopReportData> convertToReportData(List<QuyenGop> quyenGopList) {
+        return quyenGopList.stream().map(qg -> {
+            QuyenGopReportData dto = new QuyenGopReportData();
+            dto.setMaGiaoDich(qg.getMaGiaoDich());
+            dto.setTenDuAn(qg.getDuAn().getTieuDe());
+            dto.setSoTien(qg.getSoTien());
+            dto.setPhuongThucThanhToan(qg.getPhuongThucThanhToan().getValue());
+            return dto;
+        }).toList();
     }
 }

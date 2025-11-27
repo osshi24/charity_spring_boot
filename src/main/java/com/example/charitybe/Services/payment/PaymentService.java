@@ -2,12 +2,14 @@ package com.example.charitybe.Services.payment;
 
 import java.util.List; // Cần thêm import này
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.charitybe.Config.VnPayConfig;
 import com.example.charitybe.Services.email.EmailService;
 import com.example.charitybe.Services.payment.strategies.PaymentStrategy;
+import com.example.charitybe.dto.payment.PaymentEvent;
 import com.example.charitybe.dto.payment.QuyenGopRequestDTO;
 import com.example.charitybe.dto.payment.QuyenGopRequestVnpayDTO;
 import com.example.charitybe.dto.payment.QuyenGopResponseDTO;
@@ -41,6 +43,7 @@ public class PaymentService {
     private final NguoiDungRepository nguoiDungRepository;
     private final DuAnRepository duAnRepository;
     private final Timer paymentProcessingTimer;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public PaymentService(
             QuyenGopMapper quyenGopMapper,
@@ -50,7 +53,8 @@ public class PaymentService {
             EmailService emailService,
             NguoiDungRepository nguoiDungRepository,
             DuAnRepository duAnRepository,
-            MeterRegistry registry
+            MeterRegistry registry,
+            KafkaTemplate<String, Object> kafkaTemplate
 
     ) {
         this.quyenGopMapper = quyenGopMapper;
@@ -60,6 +64,7 @@ public class PaymentService {
         this.emailService = emailService;
         this.nguoiDungRepository = nguoiDungRepository;
         this.duAnRepository = duAnRepository;
+        this.kafkaTemplate = kafkaTemplate;
         // Logic khởi tạo đặc biệt: Dùng registry để đăng ký Timer
         this.paymentProcessingTimer = Timer.builder("charity.donation")
                 .description("Thời gian xử lý toàn bộ quá trình handlePayment")
@@ -98,16 +103,13 @@ public class PaymentService {
 
             quyenGop = quyenGopRepository.save(quyenGop);
 
-            // PaymentEvent paymentEvent = new PaymentEvent(
-            // payment.getId(),
-            // payment.getUserId(),
-            // payment.getCourseId(),
-            // "Thanh toán khóa học thành công");
-            // kafkaTemplate.send("payment-event", paymentEvent);
+            PaymentEvent paymentEvent = new PaymentEvent(
+                    quyenGop.getMaNguoiDung(),
+                    "Quyên góp thành công số tiền " + quyenGop.getSoTien() + "đ",
+                    quyenGop.getLoiNhan(),
+                    "DONATION");
+            kafkaTemplate.send("donation-confirmation-topic", paymentEvent);
 
-            // ApiResponseDTO<UserResponseDTO> user = userClient.getUserById(userId);
-            // ApiResponseDTO<CourseResponseDTO> course =
-            // courseClient.getCourseById(request.getCourseId());
             QuyenGopResponseDTO response = quyenGopMapper.toDTO(quyenGop);
             orderMonitoringPort.recordSuccessfulDonation(response);
             sendConfirmationEmail(quyenGop, response);
@@ -129,14 +131,12 @@ public class PaymentService {
         }
     }
 
-
-
     private void sendConfirmationEmail(QuyenGop quyenGop, QuyenGopResponseDTO response) {
         try {
             // Lấy thông tin người dùng
             NguoiDung nguoiDung = nguoiDungRepository.findById(quyenGop.getMaNguoiDung())
                     .orElse(null);
-            
+
             if (nguoiDung == null || nguoiDung.getEmail() == null) {
                 log.warn("Không tìm thấy email của người dùng ID: {}", quyenGop.getMaNguoiDung());
                 return;
@@ -145,17 +145,16 @@ public class PaymentService {
             // Lấy thông tin dự án
             DuAn duAn = duAnRepository.findById(quyenGop.getMaDuAn())
                     .orElse(null);
-            
+
             String tenDuAn = duAn.getTieuDe();
-            String tenNguoiDung =nguoiDung.getHo() + " " + nguoiDung.getTen();
+            String tenNguoiDung = nguoiDung.getHo() + " " + nguoiDung.getTen();
 
             // Gửi email (async)
             emailService.sendDonationConfirmationEmail(
                     nguoiDung.getEmail(),
                     response,
                     tenNguoiDung,
-                    tenDuAn
-            );
+                    tenDuAn);
 
             log.info("Đã gửi yêu cầu email xác nhận quyên góp cho user: {}", nguoiDung.getEmail());
 
@@ -171,7 +170,7 @@ public class PaymentService {
     private void sendFailureEmail(Long userId, String maGiaoDich, String reason) {
         try {
             NguoiDung nguoiDung = nguoiDungRepository.findById(userId).orElse(null);
-            
+
             if (nguoiDung == null || nguoiDung.getEmail() == null) {
                 return;
             }
@@ -182,8 +181,7 @@ public class PaymentService {
                     nguoiDung.getEmail(),
                     tenNguoiDung,
                     maGiaoDich,
-                    reason
-            );
+                    reason);
 
             log.info("Đã gửi email thông báo lỗi thanh toán cho user: {}", nguoiDung.getEmail());
 

@@ -78,6 +78,45 @@ services:
     networks:
       - charity-net # Đưa vào mạng chung
 
+
+  zookeeper-charity:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper-charity
+    restart: always
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      # 🌟 Bổ sung: ID Server là cần thiết
+      ZOOKEEPER_SERVER_ID: 1 
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - charity-net 
+
+  kafka-charity:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: kafka-charity
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-charity:2181 
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      
+      KAFKA_LISTENERS: PLAINTEXT://kafka-charity:29092,EXTERNAL://0.0.0.0:9092
+      
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-charity:29092,EXTERNAL://localhost:9092
+      
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT 
+      
+    depends_on:
+      - zookeeper-charity
+    networks:
+      - charity-net
+
 volumes:
   prom_data:
   grafana_data: 

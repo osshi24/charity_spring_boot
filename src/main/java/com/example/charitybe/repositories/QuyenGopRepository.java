@@ -5,6 +5,7 @@ import com.example.charitybe.enums.TrangThaiThanhToan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,5 @@ public interface QuyenGopRepository extends JpaRepository<QuyenGop, Long> {
     List<QuyenGop> findByMaNguoiDung(Long maNguoiDung);
     List<QuyenGop> findByTrangThai(TrangThaiThanhToan trangThai);
     Optional<QuyenGop> findByMaGiaoDich(String maGiaoDich);
+    List<QuyenGop> findByNgayTaoBetween(LocalDate startDate, LocalDate endDate);
 }

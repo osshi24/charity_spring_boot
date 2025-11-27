@@ -170,6 +170,41 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+
+        <!-- kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!-- rate limit -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.3-jre</version> 
+        </dependency>
+
+
+        <!-- report -->
+       <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.20.6</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+<!-- 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-javaflow</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+       -->
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
