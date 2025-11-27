@@ -48,7 +48,7 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<ApiResponseDTO<QuyenGopResponseDTO>> createPaymentForCouse(
             @Valid @RequestBody QuyenGopRequestDTO request) {
-        QuyenGopResponseDTO quyenGop = paymentService.handlePayment(request, 1L);
+        QuyenGopResponseDTO quyenGop = paymentService.handlePayment(request);
         ApiResponseDTO<QuyenGopResponseDTO> response = new ApiResponseDTO<>(
                 201, quyenGop, "Create payment successful");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

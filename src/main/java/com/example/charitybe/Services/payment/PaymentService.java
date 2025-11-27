@@ -88,12 +88,12 @@ public class PaymentService {
         return strategy.createPaymentUrl(request, quyenGopRequestVnpayDTO);
     }
 
-    public QuyenGopResponseDTO handlePayment(QuyenGopRequestDTO request, Long userId) {
+    public QuyenGopResponseDTO handlePayment(QuyenGopRequestDTO request) {
         Timer.Sample sample = Timer.start();
         QuyenGop quyenGop = quyenGopMapper.toEntity(request);
         try {
 
-            quyenGop.setMaNguoiDung(6L);
+            quyenGop.setMaNguoiDung(request.getMaNguoiDung());
             quyenGop.setMaDuAn(request.getMaDuAn());
             quyenGop.setSoTien(request.getSoTien());
             quyenGop.setPhuongThucThanhToan(PhuongThucThanhToan.valueOf(request.getPhuongThucThanhToan()));
@@ -120,7 +120,7 @@ public class PaymentService {
                     quyenGop.getPhuongThucThanhToan(),
                     quyenGop.getMaGiaoDich(),
                     "DB Save Error: " + e.getMessage());
-            sendFailureEmail(userId, quyenGop.getMaGiaoDich(), e.getMessage());
+            sendFailureEmail(request.getMaNguoiDung(), quyenGop.getMaGiaoDich(), e.getMessage());
 
             // Ném lại lỗi để Controller xử lý
             throw new RuntimeException("Error handling donation: " + e.getMessage(), e);
