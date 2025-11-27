@@ -37,7 +37,7 @@ public class Config {
                                                 // Public endpoints - không cần authentication
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                                                // Auth endpoints
+                                                // Auth endpoints - cho phép tất cả các endpoint auth
                                                 .requestMatchers("/api/auth/**").permitAll()
 
                                                 // Public read endpoints
@@ -48,9 +48,6 @@ public class Config {
 
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/quyen_gop/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/prometheus**").permitAll()
-
-                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
 
                                                 .requestMatchers(HttpMethod.POST, "/api/payments/process-vnpay")
                                                 .permitAll()
