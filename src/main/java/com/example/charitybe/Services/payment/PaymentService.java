@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.example.charitybe.Config.VnPayConfig;
+import com.example.charitybe.Services.AsyncBlockchainProcessor;
 import com.example.charitybe.Services.email.EmailService;
 import com.example.charitybe.Services.payment.strategies.PaymentStrategy;
 import com.example.charitybe.dto.payment.PaymentEvent;
@@ -30,6 +31,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import io.micrometer.core.instrument.Timer;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 @Slf4j
@@ -44,6 +46,9 @@ public class PaymentService {
     private final DuAnRepository duAnRepository;
     private final Timer paymentProcessingTimer;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Autowired(required = false)
+    private AsyncBlockchainProcessor asyncBlockchainProcessor;
 
     public PaymentService(
             QuyenGopMapper quyenGopMapper,
@@ -102,6 +107,16 @@ public class PaymentService {
             quyenGop.setLoiNhan(request.getLoiNhan());
 
             quyenGop = quyenGopRepository.save(quyenGop);
+
+            // Trigger blockchain recording for successful donations
+            if (quyenGop.getTrangThai() == TrangThaiThanhToan.THANH_CONG) {
+                if (asyncBlockchainProcessor != null) {
+                    log.info("Triggering blockchain recording for donation {} via handlePayment", quyenGop.getId());
+                    asyncBlockchainProcessor.processDonation(quyenGop.getId());
+                } else {
+                    log.warn("AsyncBlockchainProcessor not available, skipping blockchain recording for donation {}", quyenGop.getId());
+                }
+            }
 
             PaymentEvent paymentEvent = new PaymentEvent(
                     quyenGop.getMaNguoiDung(),
