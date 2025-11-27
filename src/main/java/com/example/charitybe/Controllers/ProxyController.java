@@ -1,8 +1,12 @@
 package com.example.charitybe.Controllers;
 
 
+import com.example.charitybe.Services.AsyncBlockchainProcessor;
 import com.example.charitybe.Services.PostgRestPermissionInterceptor;
 import com.example.charitybe.Services.PostgRestService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1")
+@Slf4j
 public class ProxyController {
 
     @Autowired
@@ -21,6 +26,11 @@ public class ProxyController {
 
     @Autowired
     private PostgRestPermissionInterceptor permissionInterceptor;
+
+    @Autowired(required = false)
+    private AsyncBlockchainProcessor blockchainProcessor;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST,
@@ -40,14 +50,59 @@ public class ProxyController {
 
         String path = extractForwardPath(request);
         String queryString = request.getQueryString();
+        String method = request.getMethod();
 
-        return postgRestService.forwardRequest(
-                request.getMethod(),
+        ResponseEntity<String> response = postgRestService.forwardRequest(
+                method,
                 path,
                 queryString,
                 body,
                 request
         );
+
+        // Trigger blockchain logging for successful POST requests
+        if ("POST".equalsIgnoreCase(method) && response.getStatusCode() == HttpStatus.CREATED) {
+            triggerBlockchainLogging(path, response.getBody());
+        }
+
+        return response;
+    }
+
+    /**
+     * Trigger blockchain logging for donations and disbursements
+     */
+    private void triggerBlockchainLogging(String path, String responseBody) {
+        if (blockchainProcessor == null || responseBody == null) {
+            return;
+        }
+
+        try {
+            // Parse response to get ID
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+
+            // Check if response is an array and get first element
+            if (jsonNode.isArray() && jsonNode.size() > 0) {
+                jsonNode = jsonNode.get(0);
+            }
+
+            // Get ID from response
+            if (jsonNode.has("id")) {
+                Long id = jsonNode.get("id").asLong();
+
+                // Trigger blockchain logging based on path
+                if (path.startsWith("quyen_gop")) {
+                    log.info("Triggering blockchain logging for donation {}", id);
+                    blockchainProcessor.processDonation(id);
+
+                } else if (path.startsWith("giai_ngan")) {
+                    log.info("Triggering blockchain logging for disbursement {}", id);
+                    blockchainProcessor.processDisbursement(id);
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Error triggering blockchain logging: {}", e.getMessage());
+        }
     }
 
     private String extractForwardPath(HttpServletRequest request) {
