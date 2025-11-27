@@ -48,12 +48,12 @@ public class EmailService {
         
         try {
             log.info("Đang gửi email xác nhận quyên góp đến: {}", toEmail);
-            
 
-            Instant rawInstant = quyenGopResponse.getThoiGianTao(); 
 
-            // 1. Chuyển đổi sang múi giờ Việt Nam
-            ZonedDateTime vietnamTime = rawInstant.atZone(VIETNAM_ZONE);
+            // Convert OffsetDateTime to ZonedDateTime in Vietnam timezone
+            ZonedDateTime vietnamTime = quyenGopResponse.getNgayTao() != null
+                ? quyenGopResponse.getNgayTao().atZoneSameInstant(VIETNAM_ZONE)
+                : ZonedDateTime.now(VIETNAM_ZONE);
 
             // 2. Định dạng thành chuỗi thân thiện
             String formattedTime = vietnamTime.format(FORMATTER);

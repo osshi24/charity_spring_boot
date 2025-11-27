@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "quyen_gop")
+@EntityListeners(com.example.charitybe.listeners.QuyenGopEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor

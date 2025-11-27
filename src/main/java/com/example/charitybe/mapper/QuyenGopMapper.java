@@ -22,12 +22,19 @@ public class QuyenGopMapper {
         dto.setMaNguoiDung(quyenGop.getMaNguoiDung());
         dto.setMaDuAn(quyenGop.getMaDuAn());
         dto.setSoTien(quyenGop.getSoTien());
+        dto.setDonViTienTe(quyenGop.getDonViTienTe());
         dto.setPhuongThucThanhToan(quyenGop.getPhuongThucThanhToan().getValue());
         dto.setTrangThaiThanhToan(quyenGop.getTrangThai());
         dto.setMaGiaoDich(quyenGop.getMaGiaoDich());
         dto.setLoiNhan(quyenGop.getLoiNhan());
+        dto.setPhiGiaoDich(quyenGop.getPhiGiaoDich());
         dto.setSoTienThuc(quyenGop.getSoTienThuc());
-        dto.setThoiGianTao(quyenGop.getNgayTao() != null ? quyenGop.getNgayTao().toInstant() : null);
+        dto.setNgayTao(quyenGop.getNgayTao());
+        dto.setNgayCapNhat(quyenGop.getNgayCapNhat());
+        dto.setBlockchainTxHash(quyenGop.getBlockchainTxHash());
+        dto.setBlockchainBlockNumber(quyenGop.getBlockchainBlockNumber());
+        dto.setBlockchainStatus(quyenGop.getBlockchainStatus());
+        dto.setBlockchainTimestamp(quyenGop.getBlockchainTimestamp());
         return dto;
     }
 
@@ -36,17 +43,38 @@ public class QuyenGopMapper {
         payment.setMaNguoiDung(request.getMaNguoiDung());
         payment.setMaDuAn(request.getMaDuAn());
         payment.setSoTien(request.getSoTien());
-        // Bạn cần chuyển đổi từ String sang enum cho các trường enum
+        payment.setDonViTienTe(request.getDonViTienTe());
+        // Chuyển đổi từ String sang enum, hỗ trợ cả uppercase và lowercase
         if (request.getPhuongThucThanhToan() != null) {
-            payment.setPhuongThucThanhToan(PhuongThucThanhToan.valueOf(request.getPhuongThucThanhToan()));
+            try {
+                // Try uppercase first (enum name: VNPAY, MOMO, CHUYEN_KHOAN)
+                payment.setPhuongThucThanhToan(
+                    PhuongThucThanhToan.valueOf(request.getPhuongThucThanhToan().toUpperCase())
+                );
+            } catch (IllegalArgumentException e) {
+                // If failed, try lowercase (enum value: vnpay, momo, chuyen_khoan)
+                payment.setPhuongThucThanhToan(
+                    PhuongThucThanhToan.fromValue(request.getPhuongThucThanhToan())
+                );
+            }
         }
         if (request.getTrangThaiThanhToan() != null) {
-            payment.setTrangThai(TrangThaiThanhToan.valueOf(request.getTrangThaiThanhToan()));
+            try {
+                // Try uppercase first (enum name: CHO_XU_LY, THANH_CONG, THAT_BAI)
+                payment.setTrangThai(
+                    TrangThaiThanhToan.valueOf(request.getTrangThaiThanhToan().toUpperCase())
+                );
+            } catch (IllegalArgumentException e) {
+                // If failed, try lowercase (enum value: cho_xu_ly, thanh_cong, that_bai)
+                payment.setTrangThai(
+                    TrangThaiThanhToan.fromValue(request.getTrangThaiThanhToan())
+                );
+            }
         }
-        payment.setSoTienThuc(request.getSoTienThuc());
-        payment.setDonViTienTe(request.getDonViTienTe());
         payment.setMaGiaoDich(request.getMaGiaoDich());
         payment.setLoiNhan(request.getLoiNhan());
+        payment.setPhiGiaoDich(request.getPhiGiaoDich());
+        payment.setSoTienThuc(request.getSoTienThuc());
         return payment;
     }
 

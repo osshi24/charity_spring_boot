@@ -97,33 +97,18 @@ public class PaymentService {
         Timer.Sample sample = Timer.start();
         QuyenGop quyenGop = quyenGopMapper.toEntity(request);
         try {
-
-            quyenGop.setMaNguoiDung(request.getMaNguoiDung());
-            quyenGop.setMaDuAn(request.getMaDuAn());
-            quyenGop.setSoTien(request.getSoTien());
-            quyenGop.setPhuongThucThanhToan(PhuongThucThanhToan.valueOf(request.getPhuongThucThanhToan()));
-            quyenGop.setTrangThai(TrangThaiThanhToan.valueOf(request.getTrangThaiThanhToan()));
-            quyenGop.setMaGiaoDich(request.getMaGiaoDich());
-            quyenGop.setLoiNhan(request.getLoiNhan());
-
+            // Mapper already set all fields, no need to duplicate
             quyenGop = quyenGopRepository.save(quyenGop);
 
-            // Trigger blockchain recording for successful donations
-            if (quyenGop.getTrangThai() == TrangThaiThanhToan.THANH_CONG) {
-                if (asyncBlockchainProcessor != null) {
-                    log.info("Triggering blockchain recording for donation {} via handlePayment", quyenGop.getId());
-                    asyncBlockchainProcessor.processDonation(quyenGop.getId());
-                } else {
-                    log.warn("AsyncBlockchainProcessor not available, skipping blockchain recording for donation {}", quyenGop.getId());
-                }
-            }
+            // Blockchain will be triggered automatically by EntityListener after DB commit
 
-            PaymentEvent paymentEvent = new PaymentEvent(
-                    quyenGop.getMaNguoiDung(),
-                    "Quyên góp thành công số tiền " + quyenGop.getSoTien() + "đ",
-                    quyenGop.getLoiNhan(),
-                    "DONATION");
-            kafkaTemplate.send("donation-confirmation-topic", paymentEvent);
+            // Kafka disabled to improve API performance
+            // PaymentEvent paymentEvent = new PaymentEvent(
+            //         quyenGop.getMaNguoiDung(),
+            //         "Quyên góp thành công số tiền " + quyenGop.getSoTien() + "đ",
+            //         quyenGop.getLoiNhan(),
+            //         "DONATION");
+            // kafkaTemplate.send("donation-confirmation-topic", paymentEvent);
 
             QuyenGopResponseDTO response = quyenGopMapper.toDTO(quyenGop);
             orderMonitoringPort.recordSuccessfulDonation(response);

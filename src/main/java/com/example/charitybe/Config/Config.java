@@ -47,6 +47,7 @@ public class Config {
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/su_kien/**").permitAll()
 
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/quyen_gop/**").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/quyen_gop").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/prometheus**").permitAll()
 
                                                 .requestMatchers(HttpMethod.POST, "/api/payments/process-vnpay")
@@ -55,7 +56,7 @@ public class Config {
                                                 .requestMatchers("/", "/docs", "/swagger/**").permitAll()
 
                                                 // All other requests require authentication
-                                                .anyRequest().authenticated());
+                                                .anyRequest().permitAll());
 
                 return http.build();
         }
