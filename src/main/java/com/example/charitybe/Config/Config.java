@@ -38,7 +38,7 @@ public class Config {
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                                                 // Auth endpoints - cho phép tất cả các endpoint auth
-                                                .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers("/api/v1/auth/**").permitAll()
 
                                                 // Public read endpoints
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/du_an/**").permitAll()
