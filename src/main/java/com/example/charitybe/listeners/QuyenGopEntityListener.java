@@ -1,28 +1,18 @@
 package com.example.charitybe.listeners;
 
 import com.example.charitybe.Services.AsyncBlockchainProcessor;
+import com.example.charitybe.config.SpringContext;
 import com.example.charitybe.entities.QuyenGop;
 import com.example.charitybe.enums.TrangThaiThanhToan;
 import jakarta.persistence.PostPersist;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * JPA Entity Listener for QuyenGop
  * Automatically triggers blockchain recording after entity is persisted to database
  */
 @Slf4j
-@Component
 public class QuyenGopEntityListener {
-
-    private static ApplicationContext applicationContext;
-
-    @Autowired
-    public void setApplicationContext(ApplicationContext context) {
-        QuyenGopEntityListener.applicationContext = context;
-    }
 
     /**
      * Triggered after QuyenGop entity is persisted to database
@@ -38,10 +28,10 @@ public class QuyenGopEntityListener {
         }
 
         try {
-            // Get AsyncBlockchainProcessor from Spring context
+            // Get AsyncBlockchainProcessor from Spring context using SpringContext utility
             // We can't inject it directly because JPA listeners are not Spring beans
             AsyncBlockchainProcessor blockchainProcessor =
-                applicationContext.getBean(AsyncBlockchainProcessor.class);
+                SpringContext.getBean(AsyncBlockchainProcessor.class);
 
             log.info("Triggering blockchain recording for donation {} via EntityListener",
                 quyenGop.getId());

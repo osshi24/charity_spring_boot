@@ -1,0 +1,65 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE
+.idea
+.vscode
+*.iml
+*.iws
+*.ipr
+.settings
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+db-data/
+*.dump
+
+# Monitoring
+monitoring/
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+compose.yaml
+
+# Git
+.git
+.gitignore
+README.md
+
+# Documentation
+*.md
+AGENTS.md
+API-AUTHENTICATION-DOCS.md
+BLOCKCHAIN_INTEGRATION.md
+
+# SQL files
+*.sql
+
+# Test
+src/test/
+
+# Build artifacts
+mvnw
+mvnw.cmd
+.mvn/
+
+# Contracts
+contracts/
